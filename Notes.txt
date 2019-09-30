@@ -1,1 +1,158 @@
---Init Project
+# Create Project / Init Project
+    -- laravel new LaravelAjaxInsert
+
+# Assisgn DB to .env file
+    -- DB_CONNECTION=mysql
+       DB_HOST=127.0.0.1
+       DB_PORT=3306
+       DB_DATABASE=laraveldemo
+       DB_USERNAME=root
+       DB_PASSWORD=
+
+# Assign DB info to Config -> Database.php
+    -- 'database' => env('DB_DATABASE', 'laraveldemo'),
+       'username' => env('DB_USERNAME', 'root'),
+       'password' => env('DB_PASSWORD', ''),
+
+# Make a Model with Migration
+    -- php artisan make:model Contact -m
+    ** Inside the Migration
+            --  Schema::create('contacts', function (Blueprint $table) {
+                    $table->bigIncrements('id');
+                    $table->string('FName');
+                    $table->string('LName');
+                    $table->timestamps();
+                });
+    -- 
+    ** Inside the Model 
+            -- protected $table='contacts'; {{--- Mention the DB Table ---}}
+
+# Make a controller to store data with Model
+    -- php artisan make:controller ContactController -mContact
+
+# Assign a route for Display View  [ Route -> Web.pgp ]
+    -- Route::get('/', 'ContactController@index')->name('ajaxInsert.index');
+    --  public function index()
+        {
+            // Display Welcome Blade
+            return view('welcome');
+        } 
+            
+# Assign a route for Form POST   [ Route -> Web.pgp ]    
+    -- Route::POST('/', 'ContactController@store')->name('ajaxInsert.store');       
+
+# Edit a Blade
+    -- Button (To Open Model)
+    -- Model  (With Form)
+
+    -- Script For Submit Button
+        ** To Open a model when click Button  --  $('#ContactModal').modal('show'); 
+        ** Display Model Header               --  $('.modal-title').text('Add Data');
+        ** Display a message                  --  $('#form_output').html('');
+        ** reset the form when submited       --  $('#ContactForm')[0].reset();
+        ** Hidden submit value                --  $('#button_action').val('insert');    
+
+            [  <input type="hidden" name="button_action" id="button_action" value="insert" /> ]
+
+        ** submit button value                --  $('#action').val('Add');
+
+            [  <input type="submit" name="submit" id="action" value="Add" class="btn btn-info" /> ]
+
+    -- Script For Form Submit
+        ** Form URL                           --    url:"{{ route('LaravelAjaxInsert.store') }}",
+        ** Form Method                        --    method:"POST",
+        ** Form Data                          --    data:form_data,
+        ** Form Data Type                     --    dataType:"json",
+        ** When Submit Success
+                success:function(data)
+                { 
+                        $('#form_output').html(data.success);
+                        $('#student_form')[0].reset();
+                        $('#action').val('Add');
+                        $('.modal-title').text('Add Data');
+                        $('#button_action').val('insert');
+                        
+                    
+                }
+
+# Script for Insert Data Using Model without redirect
+    --  <script>
+            $(document).ready(function() { 
+            $('#add_data').click(function(){
+                    $('#ContactModal').modal('show');
+                    $('#contact_form')[0].reset();
+                    $('#form_output').html('');
+                    $('#button_action').val('insert');
+                    $('.modal-title').text('Add / Insert Data');
+                    $('#action').val('Add');
+            });
+
+            $('#contact_form').on('submit', function(event){
+                event.preventDefault();
+                var form_data = $(this).serialize();
+                $.ajax({
+                    url:"{{ route('ajaxInsert.store') }}",
+                    method:"POST",
+                    data:form_data,
+                    dataType:"json",
+                    success:function(data)
+                    { 
+                        if("abc" == "sad"){
+
+
+                        }
+                        else{
+                            $('#form_output').html(data.success);
+                            $('#contact_form')[0].reset();
+                            $('#action').val('Add');
+                            $('.modal-title').text('Add Data');
+                            $('#button_action').val('insert'); 
+                        }
+
+                        
+                    }
+                })
+            });
+        });
+        </script>
+
+# To Store the data within the STORE function of controller
+        public function store(Request $request)
+            {
+                //
+                $error_array = array();
+                $success_output = '';
+                if($request->get('button_action') == "insert")
+                {
+                    $Contacts = new Contact();
+                    $Contacts -> FName = $request -> get('first_name');
+                    $Contacts -> LName = $request -> get('last_name');
+                    $Contacts->save();
+                    $success_output = '<div class="alert alert-success">Data Inserted</div>';
+                }
+
+                $output = array(
+                    'error'     =>  $error_array,
+                    'success'   =>  $success_output
+                );
+                echo json_encode($output);  
+            } 
+
+
+            
+
+         
+               
+          
+
+
+        
+           
+           
+          
+          
+         
+
+  
+                   
+                  

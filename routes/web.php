@@ -11,6 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+/* Route::get('/', function () {
     return view('welcome');
-});
+}); */
+
+
+
+Route::get('/', 'ContactController@index')->name('ajaxInsert.index');
+Route::POST('/', 'ContactController@store')->name('ajaxInsert.store'); 
