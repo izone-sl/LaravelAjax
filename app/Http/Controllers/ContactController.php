@@ -40,8 +40,7 @@ class ContactController extends Controller
         $error_array = array();
         $success_output = '';
         if($request->get('button_action') == "insert")
-        {
-
+        { 
             $Contacts = new Contact();
             $Contacts -> FName = $request -> get('first_name');
             $Contacts -> LName = $request -> get('last_name');
